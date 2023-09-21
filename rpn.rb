@@ -1,47 +1,43 @@
-def infix_to_rpn(expression)
-  precedence = {
+def rpn(expression)
+  priority = {
     '^' => 4,
     '*' => 3,
     '/' => 3,
     '+' => 2,
     '-' => 2,
-    '(' => 1
+    '(' => 1 # щоб правильно робило вирази з дужками
   }
 
   output = [] #
-  stack = [] #
-
-  tokens = expression.split(/\s*/)  #(1 + 2) * (3 - 4)
+  operators = [] #
+  tokens = expression.split(/\s*/) #
 
   tokens.each do |token|
-    if token =~ /\d+/ # Якщо це число, додати до виходу
+    if token =~ /\d+/ # якщо число, додати до виходу
       output << token
-    elsif token == '(' # Якщо це відкриваюча дужка, додати до стеку
-      stack << token
-    elsif token == ')' # Якщо це закриваюча дужка, витягти всі оператори зі стеку до відкриваючої дужки
-      while stack.last != '('
-        output << stack.pop
+    elsif token == '(' # якщо це відкриваюча дужка, додати до operators
+      operators << token
+    elsif token == ')' # якщо закриваюча дужка, витягти всі оператори із operators до відкриваючої дужки
+      while operators.last != '('
+        output << operators.pop
       end
-      stack.pop # Видаляємо відкриваючу дужку зі стеку
+      operators.pop # видаляємо відкриваючу дужку
     else
-      # Якщо це оператор, витягти оператори зі стеку, які мають більший або рівний пріоритет, і додати їх до виходу
-      while !stack.empty? && precedence[token] <= precedence[stack.last]
-        output << stack.pop
+      # якщо це оператор, перевірка пріорітету
+      while !operators.empty? && priority[token] <= priority[operators.last]
+        output << operators.pop
       end
-      stack << token # Додати поточний оператор до стеку
+      operators << token # додати поточний оператор до operators
     end
   end
-
-  # Витягти всі залишкові оператори зі стеку та додати їх до виходу
-  while !stack.empty?
-    output << stack.pop
+  # витягти всі оператори зі стеку та додати їх до виходу
+  while !operators.empty?
+    output << operators.pop
   end
-
   return output.join(' ')
 end
-
-# Приклад використання
-input_expression = "2 + 1 * 4"
-rpn_expression = infix_to_rpn(input_expression)
-puts "Input: #{input_expression}"
+# приклад використання
+mexample = "2 + 1 * 4"
+rpn_expression = rpn(mexample)
+puts "Input: #{mexample}"
 puts "Output (RPN): #{rpn_expression}"
